@@ -11,7 +11,7 @@ from psltl.envs.ltl_envs.grids.ltl_tax_env import LTLTaxiEnv
 from psltl.envs.ltl_envs.grids.ltl_toy_env import LTLToyEnv
 from psltl.envs.ltl_envs.grids.ltl_office_env import LTLOfficeEnv
 from psltl.envs.ltl_envs.cont.ltl_water_env import LTLWaterEnv
-from psltl.envs.ltl_envs.cont.ltl_cheetah_env import MyHalfCheetahEnv, LTLCheetahEnv
+#from psltl.envs.ltl_envs.cont.ltl_cheetah_env import MyHalfCheetahEnv, LTLCheetahEnv
 
 # save model param info
 from psltl.utils.utils import save_model_param_info, set_seed
@@ -72,6 +72,7 @@ def get_ltl_env(
         eval_env = LTLWaterEnv(water_env, atm, max_episode_steps, reward_kwargs, setting)
         eval_env.action_space.seed(params.seed)
     elif env_name == "cheetah":
+        from psltl.envs.ltl_envs.cont.ltl_cheetah_env import MyHalfCheetahEnv, LTLCheetahEnv
         cheetah_env = MyHalfCheetahEnv()
         raw_env = LTLCheetahEnv(cheetah_env, atm, max_episode_steps=1000, reward_kwargs=reward_kwargs, setting=setting)
         raw_env.action_space.seed(params.seed)
