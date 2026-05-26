@@ -19,7 +19,7 @@ setup(
         "cython<3",
         "logaut", 
         "pythomata",
-        "pickle5", # for save files, and load files
+        "pickle5; python_version < '3.8'", # for save files, and load files
     ],
     description="Adaptive Reward Design for Reinforcement Learning in Complex Robotic Tasks",
     keywords="Adaptive Reward Design for Reinforcement Learning in Complex Robotic Tasks", 
