@@ -12,7 +12,7 @@ args = get_parser()
 alg = args.algo_name
 env_name = args.env_name
 
-assert env_name in ["office", "water", "cheetah", "toy", "taxi"], print("Env types " + str(env_name) + " hasn't been defined yet.")
+assert env_name in ["office", "water", "cheetah", "toy","toy_test", "taxi"], print("Env types " + str(env_name) + " hasn't been defined yet.")
 assert alg in ["dqn", "ddqn", "ddpg", "ppo", "a2c", "td3", "sac"]
 
 match_reward_types = {"p": "progress", "h": "hybrid", "n": "naive"}

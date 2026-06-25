@@ -1,4 +1,8 @@
+import os
 import sys
+
+# Force CPU mode. Avoid CUDA error on RTX 5060 / unsupported PyTorch CUDA.
+os.environ["CUDA_VISIBLE_DEVICES"] = ""
 
 sys.argv = [
     "run.py",
@@ -7,12 +11,12 @@ sys.argv = [
     "--total_run", "1",
     "--episode_step", "25",
     "--reward_types", "p",
-    "--default_setting", "True", #learning_param.py
+    "--default_setting", "True",
     "--seed", "0",
     "--algo_name", "dqn",
     "--use_adrs", "True",
     "--node_embedding", "True",
-    "--eval_freq", "100", #隔多久测试一次
+    "--eval_freq", "100",
 ]
 
 import run

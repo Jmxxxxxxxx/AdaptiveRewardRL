@@ -33,6 +33,7 @@ toy = {
     }
 
 toy = dict([(reward_type, toy) for reward_type in reward_types])
+toy_test = toy
 
 ####################################################################
 # HYPERPARAMS FOR OFFICE ENVIRONMENT
@@ -515,8 +516,8 @@ def get_param(env_name: str, reward_type: str, alg: str = "ddpg", env_type: str 
         param = office_params[env_type]
         learning_params = GridWorldLearningParams(**param[reward_type])
 
-    elif env_name == "toy":
-        learning_params = GridWorldLearningParams(**toy[reward_type])
+    elif env_name in ["toy", "toy_test"]:
+        learning_params = GridWorldLearningParams(**toy_test[reward_type])
     
     else:
         raise NotImplementedError("Each algorithm is used for a specific environment. Check utils.param_info.py")

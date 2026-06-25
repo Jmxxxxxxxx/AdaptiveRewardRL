@@ -55,7 +55,7 @@ def get_atm(env_name: str):
 	env_name: str
 		call automaton associated with each environment
 	"""
-    assert env_name in ["office", "water", "cheetah", "taxi", "toy"]
+    assert env_name in ["office", "water", "cheetah", "taxi", "toy", "toy_test"]
     # current file directory
     dir_path = os.path.dirname(os.path.realpath(__file__))
     

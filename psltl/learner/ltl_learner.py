@@ -58,7 +58,7 @@ def get_ltl_env(
         # for evaluation env
         reward_kwargs.update({"reward_type": "naive", "adaptive_rs": False})
         eval_env = LTLTaxiEnv(atm, max_episode_steps, reward_kwargs=reward_kwargs, setting=setting)
-    elif env_name == "toy":
+    elif env_name in ["toy", "toy_test"]:
         env = LTLToyEnv(atm, reward_kwargs=reward_kwargs, setting=setting)
         # for evaluation env
         reward_kwargs.update({"reward_type": "naive", "adaptive_rs": False})
@@ -126,7 +126,7 @@ def ltl_env_learn(
     
     #Grid world 环境使用 DQN
     # grid world environments
-    if env_name in ["taxi", "office", "toy"]:
+    if env_name in ["taxi", "office", "toy", "toy_test"]:
         model = DQN(DQNPolicy, env, **model_params)
         sequential_model_container = model.q_net.q_net
         layer = sequential_model_container[0]
