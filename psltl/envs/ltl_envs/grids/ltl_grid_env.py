@@ -10,6 +10,22 @@ from psltl.envs.common.grids.craft_world import CraftWorld
 from psltl.envs.skeletons.env_default_settings import setting, reward_kwargs
 
 
+# action
+#   ↓
+# 原始 grid env 执行动作
+#   ↓
+# 得到新的 MDP state
+#   ↓
+# 读取当前位置 label/event
+#   ↓
+# 用 DFA transition 更新 automaton state
+#   ↓
+# 根据 prev_q 和 curr_q 算 reward
+#   ↓
+# 判断 episode 是否结束
+#   ↓
+# 返回 observation, reward, done, info
+
 class LTLGridEnv(LTLEnv):
     """
 	Attributes
@@ -53,6 +69,10 @@ class LTLGridEnv(LTLEnv):
 		We may convert 'int' type automaton state into 'vector' or 'float'
 	"""
 
+    # 普通 GridWorld + DFA automaton + reward setting
+    #         ↓
+    # LTLGridEnv
+
     def __init__(
         self, 
         env: gym.Env, 
@@ -88,6 +108,7 @@ class LTLGridEnv(LTLEnv):
         
         self.shape = (self.env.map_height, self.env.map_width)
         self.action_space = spaces.Discrete(self.action_dim) # up, right, down, left
+
         if type(self.env.get_features()) == int:
             self.curr_mdp_state = self.env.get_features()
         else:
@@ -175,10 +196,12 @@ class LTLGridEnv(LTLEnv):
         # the environment will update all mdp state based on the action taken
         env_state, env_reward, env_done, env_info = self.env.step(action)
         # if we want to use environmental reward, then just return originally designed reward and states without augmentation
+        #只使用原始环境的reward和状态，不使用自动机状态和reward shaping
         if self.setting["original_env"]:
             return env_state, env_reward, env_done, env_info
-
+        
         if self.setting["node_embedding"]:
+            #更新MDP state为vectorized feature
             mdp_state = tuple(self.env.get_vector_features())
         else:
             if type(self.env.get_features()) == int:
@@ -187,6 +210,7 @@ class LTLGridEnv(LTLEnv):
                 mdp_state = tuple(self.env.get_features())
 
         self.curr_mdp_state = mdp_state
+        # 读取label
         label = self.env.get_events()
         
         # infeasible case
@@ -194,6 +218,8 @@ class LTLGridEnv(LTLEnv):
             # this is for taxi and office, both case goal label is missing
             if "g" in label:
                 label = label.replace("g", "")
+
+        # 用DFA更新自动机状态，得到新的自动机状态
         next_q = self.atm.delta(self.curr_q, label)
         next_q = int(list(next_q)[0])
 
@@ -201,11 +227,15 @@ class LTLGridEnv(LTLEnv):
 
         self.update_q_state(next_q)
 
+        # 构造新的 observation
         new_obs = self.get_observation(self.curr_q)
+
         curr_q_rank = self.partial_achieve[self.curr_q]
+        # 根据自动机进展给reward，对比previous和current
         reward = self.get_reward(self.prev_q, self.curr_q, self.setting["human"], self.setting["human_designed_reward"])
         
         # highest_success_sofar will be updated on is_terminal part
+        # 判断episode是否结束，done = True or False
         done = self.is_terminal()
         
         info.update({
@@ -215,6 +245,7 @@ class LTLGridEnv(LTLEnv):
     
         return new_obs, reward, done, info
     
+    #每个episode开始的时候，重置环境状态和自动机状态
     def reset(self) -> np.array:
         """Reset environment setup
 		
@@ -249,6 +280,7 @@ class LTLGridEnv(LTLEnv):
         return init_observation
     
     # we incorporate automaton state with mdp state
+    # observation = 当前环境状态 + 编码后的自动机状态
     def get_observation(self, q) -> np.array:
         """Get observation concatenated with automaton state
         
@@ -263,6 +295,7 @@ class LTLGridEnv(LTLEnv):
 
         return observation
         
+    # 决定自动机q怎么编码    
     def get_converted_q(self, q: int) -> Any: 
         """We may convert 'int' type automaton state into 'vector' or 'float'
 		

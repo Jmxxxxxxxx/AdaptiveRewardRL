@@ -46,9 +46,11 @@ class LTLToyEnv(LTLGridEnv):
         reward_kwargs: dict = reward_kwargs,
         setting: dict = setting
     ):
+        #加载地图，调用父类 LTLGridEnv 的构造函数
         env = CraftWorld("/psltl/envs/common/grids/maps/toy.txt")
         super().__init__(env, atm, max_episode_steps, action_dim, reward_kwargs, setting)
 
+    # 根据当前 MDP state 和 automaton state，构造给 DQN 的 observation
     def get_observation(self, q) -> np.array:
         """Get observation concatenated with automaton state
 
@@ -58,6 +60,13 @@ class LTLToyEnv(LTLGridEnv):
         """
 
         converted_q = self.get_converted_q(q)
+        # node embedding 例子
+        # MDP state = [3, 2]
+        # automaton 有 5 个 state
+        # 当前 q = 2
+
+        # 那么node embedding是
+        # [0, 0, 3, 2, 0, 0, 0, 0, 0, 0]
         if self.setting["node_embedding"]:
             new_obs = []
             for i in range(self.atm.nstates):
@@ -68,4 +77,5 @@ class LTLToyEnv(LTLGridEnv):
 
             return np.array(new_obs)
         else:
+            #observation 是当前 MDP state 和 automaton state 的拼接
             return np.append(self.curr_mdp_state, converted_q)

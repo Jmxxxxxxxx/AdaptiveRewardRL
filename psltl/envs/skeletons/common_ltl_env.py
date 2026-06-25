@@ -5,6 +5,11 @@ from collections import defaultdict
 from psltl.reward_functions.reward_function_standard import Progress, Hybrid, NaiveReward, SuccessReward
 from psltl.ltl.partial_sat_atm_load import LoadedPartialSatATM
 
+# 1. 初始化 automaton 相关变量
+# 2. 选择 reward function
+# 3. 判断是否成功 / 失败 / 超时
+# 4. 记录 partial success
+# 5. 判断是否触发 adaptive reward update
 
 class LTLEnv(CommonEnv):
     """
@@ -70,6 +75,7 @@ class LTLEnv(CommonEnv):
 		Determine the termination of the current episode
 	"""
 
+    # 初始化LTL环境
     def __init__(
         self, 
         env: gym.Env, 
@@ -105,6 +111,7 @@ class LTLEnv(CommonEnv):
     def env_intialize(self) -> None:
         raise NotImplementedError
 
+    # 把 automaton 里的信息拿出来，变成环境内部变量
     def atm_intialize(self) -> None:
         """Initialize automaton information
         Distance function, Original Distance function (Note that distance function will be updated if we use adpative reward shaping)
@@ -158,6 +165,7 @@ class LTLEnv(CommonEnv):
         for automaton_state in self.atm.states:
             self.partial_achieve[automaton_state] = self.get_partial_achieve(automaton_state)
 
+    # 收集实验指标
     def get_measurements(self) -> dict:
         """Get measurement success rate, partial satisfibability, and extra
 		
@@ -190,6 +198,7 @@ class LTLEnv(CommonEnv):
 
         return info
     
+    # 越接近 accepting state，partial achievement 越高
     def get_partial_achieve(self, automaton_state: int) -> int:
         """Get partial achievement based on rank for automaton states
         We have defined some rank on automaton states

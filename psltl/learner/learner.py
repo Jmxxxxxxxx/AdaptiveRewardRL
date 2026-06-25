@@ -33,9 +33,11 @@ class Learner:
         # reward kwargs, this for reward shaping parameters        
         adrs_mu = 0.5
 
+        #传给 reward function 的配置包
         reward_kwargs.update(dict([("hybrid_eta", params.hybrid_eta), ("adrs_update", params.adrs_update), ("adrs_mu", adrs_mu),
                                    ("reward_type", reward_type), ("adaptive_rs", use_adrs), ("theta", params.theta)
                                    ]))    
+        #传给 environment 的配置包
         setting.update(dict([("vector", params.vector), ("use_one_hot", params.use_one_hot), \
                                     ("adrs_update", params.adrs_update), ("node_embedding", params.node_embedding),
                                     ("missing", bool(params.missing)), ("human", params.human), ("noise", params.noise_level)
@@ -48,6 +50,7 @@ class Learner:
         algo_names = []        
         algo_name = reward_type
         
+        #给实验输出结果的文件夹命名
         # if we use adaptive reward shaping, then add it to the anme
         if use_adrs:
             algo_name += "_adrs"
@@ -70,7 +73,11 @@ class Learner:
         # save algorithm name to plot
         algo_names.append(algo_name)
         
+        #创建训练环境和评估环境
+        #训练看的是policy在“调整后的reward function”上的表现，评估看的是policy在“原始reward function”上的表现
         # fill the dictionary with the name and corresponding environment
         env, eval_env = get_ltl_env(env_name, reward_kwargs, setting, params)
+
+        #设置随机种子并开始训练
         set_seed(params.seed)
         ltl_env_learn(reward_type, env, eval_env, params)

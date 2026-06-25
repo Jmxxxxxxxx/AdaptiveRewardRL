@@ -28,23 +28,25 @@ from stable_baselines3.common.noise import NormalActionNoise
 from stable_baselines3.common.vec_env import VecNormalize, DummyVecEnv, VecMonitor
 from stable_baselines3.common.logger import configure
 
-
+#根据 env_name 创建训练环境 env 和评估环境 eval_env
 def get_ltl_env(
-    env_name: str,
-    reward_kwargs: dict,
-    setting: dict,
-    params: Any, 
+    env_name: str,#选择环境的名字，office, taxi, toy, water, cheetah
+    reward_kwargs: dict,#reward function 的配置包，包含 reward shaping 的参数
+    setting: dict,#环境的配置包，包含 state representation 的参数，是否有噪声，是否有缺失等
+    params: Any, #总参数对象，比如 seed、episode_step、map_size
     ) -> Any:
     
     # hyperparemters for environments
     max_episode_steps = params.episode_step
 
+    #加载自动机
     # automaton setup
     atm = get_atm(env_name)
     atm.print_results()
     set_seed(params.seed)
     reward_kwargs.update({"version": params.version})
 
+    #根据环境名字创建对应的训练环境和评估环境
     if env_name == "office":
         map_size = params.map_size
         env = LTLOfficeEnv(atm, start=(2, 1), map_size=map_size, max_episode_steps=max_episode_steps, reward_kwargs=reward_kwargs, setting=setting)
@@ -91,7 +93,7 @@ def get_ltl_env(
 
     return env, eval_env
 
-
+#根据环境和参数创建 RL model，然后调用 model.learn(...) 开始训练
 def ltl_env_learn(
     reward_type: str,
     env: Any,
@@ -99,6 +101,7 @@ def ltl_env_learn(
     params: Any,
     ):
 
+    #读取训练参数
     env_name = params.env_name
     algo_name = params.algo_name
     total_timesteps = params.total_timesteps
@@ -118,13 +121,16 @@ def ltl_env_learn(
         reward_type += "_adrs"
 
     log_path = "./log/" + folder_name + "/" + algo_name + "/" + reward_type + f"_theta{params.theta}_update{params.adrs_update}" + "/" + str(seed)
+    #每隔 eval_freq 步，拿当前 policy 到 eval_env 里面测试一次
     eval_callback = EvalCallback(eval_env, eval_freq=eval_freq, log_path=log_path, discount=params.gamma, eval_window=int(params.rolling))
     
+    #Grid world 环境使用 DQN
     # grid world environments
     if env_name in ["taxi", "office", "toy"]:
         model = DQN(DQNPolicy, env, **model_params)
         sequential_model_container = model.q_net.q_net
         layer = sequential_model_container[0]
+        #初始化 Q network 权重，不同 reward 类型对应不同初始 Q 值设置
         if "progress" in reward_type:
             layer.weight = nn.init.constant_(layer.weight, init_q["progress"])
         elif "hybrid" in reward_type:
@@ -132,6 +138,7 @@ def ltl_env_learn(
         elif "naive" in reward_type:
             layer.weight = nn.init.constant_(layer.weight, init_q["naive"])
 
+    #连续状态空间环境使用 DDPG, TD3, A2C, PPO, SAC
     elif env_name in ["cheetah", "water"]:
         if algo_name == "ddpg" or algo_name == "td3":
             assert len(env.action_space.shape) > 0, "DDPG and TD3 need continuous action space"
@@ -157,6 +164,7 @@ def ltl_env_learn(
             model = SAC("MlpPolicy", env, **model_params)
 
     # training the algorithm for total timesteps
+    # 设置 logger 并开始训练
     logger = configure(os.getcwd() + "/logger/" + folder_name + "/" + algo_name + "/" + reward_type + f"_theta{params.theta}_update{params.adrs_update}" + "/" + str(seed), ["csv"])
     set_seed(params.seed)
     model.set_logger(logger)

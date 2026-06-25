@@ -4,7 +4,7 @@ from collections import defaultdict
 import numpy as np
 import pickle
 
-
+# 把保存好的 DFA 自动机读出来
 class LoadedPartialSatATM:
     """
     Attributes

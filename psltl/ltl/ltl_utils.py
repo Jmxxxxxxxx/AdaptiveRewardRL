@@ -5,7 +5,7 @@ from psltl.ltl.partial_sat_atm_load import LoadedPartialSatATM
 import os
 import pickle
 
-
+#把 automaton 存成 pkl 文件
 def save_atm(atm: PartialSatATM, save_info_path: str, save_delta_path: str) -> None:
     """Save automaton information with two part
 	
@@ -45,7 +45,7 @@ def save_atm(atm: PartialSatATM, save_info_path: str, save_delta_path: str) -> N
     with open(save_info_path, "wb") as f:
         pickle.dump(info, f, protocol=pickle.HIGHEST_PROTOCOL)
    
-
+# 从 pkl 文件加载 automaton
 # get atomaton based on the environment name
 def get_atm(env_name: str):
     """Get saved automaton
