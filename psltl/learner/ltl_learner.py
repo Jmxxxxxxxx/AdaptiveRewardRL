@@ -9,6 +9,9 @@ from psltl.envs.common.cont.water.water_world import WaterWorld, WaterWorldParam
 # LTL environments
 from psltl.envs.ltl_envs.grids.ltl_tax_env import LTLTaxiEnv
 from psltl.envs.ltl_envs.grids.ltl_toy_env import LTLToyEnv
+from psltl.envs.ltl_envs.grids.ltl_toy_benchmark_env import LTLToyBenchmarkEnv
+from psltl.envs.ltl_envs.grids.ltl_toy_benchmark_medium_env import LTLToyBenchmarkMediumEnv
+from psltl.envs.ltl_envs.grids.ltl_toy_benchmark_hard_env import LTLToyBenchmarkHardEnv
 from psltl.envs.ltl_envs.grids.ltl_office_env import LTLOfficeEnv
 from psltl.envs.ltl_envs.cont.ltl_water_env import LTLWaterEnv
 #from psltl.envs.ltl_envs.cont.ltl_cheetah_env import MyHalfCheetahEnv, LTLCheetahEnv
@@ -63,6 +66,31 @@ def get_ltl_env(
         # for evaluation env
         reward_kwargs.update({"reward_type": "naive", "adaptive_rs": False})
         eval_env = LTLToyEnv(atm, reward_kwargs=reward_kwargs, setting=setting)
+    elif env_name == "toy_benchmark":
+        env = LTLToyBenchmarkEnv(atm, reward_kwargs=reward_kwargs, setting=setting)
+        print("Training action_space:", env.action_space)
+        # for evaluation env
+        reward_kwargs.update({"reward_type": "naive", "adaptive_rs": False})
+        eval_env = LTLToyBenchmarkEnv(atm, reward_kwargs=reward_kwargs, setting=setting)
+        print("Evaluation action_space:", eval_env.action_space)
+    elif env_name == "toy_benchmark_medium":
+        env = LTLToyBenchmarkMediumEnv(atm, reward_kwargs=reward_kwargs, setting=setting)
+        print("Training action_space:", env.action_space)
+        print("Training max_episode_steps:", env.max_episode_steps)
+        # for evaluation env
+        reward_kwargs.update({"reward_type": "naive", "adaptive_rs": False})
+        eval_env = LTLToyBenchmarkMediumEnv(atm, reward_kwargs=reward_kwargs, setting=setting)
+        print("Evaluation action_space:", eval_env.action_space)
+        print("Evaluation max_episode_steps:", eval_env.max_episode_steps)
+    elif env_name == "toy_benchmark_hard":
+        env = LTLToyBenchmarkHardEnv(atm, reward_kwargs=reward_kwargs, setting=setting)
+        print("Training action_space:", env.action_space)
+        print("Training max_episode_steps:", env.max_episode_steps)
+        # for evaluation env
+        reward_kwargs.update({"reward_type": "naive", "adaptive_rs": False})
+        eval_env = LTLToyBenchmarkHardEnv(atm, reward_kwargs=reward_kwargs, setting=setting)
+        print("Evaluation action_space:", eval_env.action_space)
+        print("Evaluation max_episode_steps:", eval_env.max_episode_steps)
     # For the continuous state space, so we use NN for the following environments
     elif env_name == "water":
         water_params = WaterWorldParams(params.water_world_map_path, b_radius=15, max_x=400, max_y=400, b_num_per_color=2, use_velocities=True, ball_disappear=False)
@@ -126,7 +154,7 @@ def ltl_env_learn(
     
     #Grid world 环境使用 DQN
     # grid world environments
-    if env_name in ["taxi", "office", "toy", "toy_test"]:
+    if env_name in ["taxi", "office", "toy", "toy_test", "toy_benchmark", "toy_benchmark_medium", "toy_benchmark_hard"]:
         model = DQN(DQNPolicy, env, **model_params)
         sequential_model_container = model.q_net.q_net
         layer = sequential_model_container[0]

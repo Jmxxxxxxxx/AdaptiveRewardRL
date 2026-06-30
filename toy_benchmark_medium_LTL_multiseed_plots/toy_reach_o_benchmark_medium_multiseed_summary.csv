@@ -1,0 +1,5 @@
+run_name,label,num_seeds,seeds,final_timestep,mean_final_reward,std_final_reward,mean_final_success_rate,std_final_success_rate,mean_final_episode_length,std_final_episode_length,first_success_timestep_mean_curve
+progress_adrs,Adaptive Progression,10,0 1 2 3 4 5 6 7 8 9,10000,0.3511146176189299,0.07261174276214039,1.0,0.0,11.2,2.4,2800
+hybrid_adrs,Adaptive Hybrid,10,0 1 2 3 4 5 6 7 8 9,10000,0.3874204890000001,0.0,1.0,0.0,10.0,0.0,3000
+hybrid,Hybrid,10,0 1 2 3 4 5 6 7 8 9,10000,0.3874204890000001,0.0,1.0,0.0,10.0,0.0,4600
+progress,Progress,10,0 1 2 3 4 5 6 7 8 9,10000,0.3874204890000001,0.0,1.0,0.0,10.0,0.0,5600

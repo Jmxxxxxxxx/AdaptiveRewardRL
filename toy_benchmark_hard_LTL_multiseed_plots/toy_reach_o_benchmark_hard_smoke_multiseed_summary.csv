@@ -1,0 +1,2 @@
+toy_task,method,run_name,label,num_seeds,seeds,final_timestep,mean_final_reward,std_final_reward,mean_final_success_rate,std_final_success_rate,mean_final_episode_length,std_final_episode_length,first_success_timestep_mean_curve,final_reward,final_success,final_ep_length,first_success_timestep
+toy_reach_o,progress_adrs,progress_adrs,Adaptive Progression,1,0,10000,0.0,0.0,0.0,0.0,200.0,0.0,,0.0,0.0,200.0,

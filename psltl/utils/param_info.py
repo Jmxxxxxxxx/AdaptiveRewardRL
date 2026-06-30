@@ -516,7 +516,7 @@ def get_param(env_name: str, reward_type: str, alg: str = "ddpg", env_type: str 
         param = office_params[env_type]
         learning_params = GridWorldLearningParams(**param[reward_type])
 
-    elif env_name in ["toy", "toy_test"]:
+    elif env_name in ["toy", "toy_test", "toy_benchmark", "toy_benchmark_medium", "toy_benchmark_hard"]:
         learning_params = GridWorldLearningParams(**toy_test[reward_type])
     
     else:

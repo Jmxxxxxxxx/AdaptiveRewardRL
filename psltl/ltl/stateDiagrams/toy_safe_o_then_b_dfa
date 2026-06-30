@@ -1,0 +1,17 @@
+digraph {
+	fake [style=invisible]
+	0 [root=true]
+	1
+	2
+	3 [shape=doublecircle]
+	fake -> 0 [style=bold]
+	2 -> 3 [label=b]
+	3 -> 3 [label=True]
+	2 -> 1 [label="y & ~b"]
+	0 -> 1 [label="(b & y & ~o) | (o & y & ~b) | (y & ~b & ~o)"]
+	0 -> 2 [label="o & ~b & ~y"]
+	0 -> 3 [label="b & o"]
+	2 -> 2 [label="~b & ~y"]
+	0 -> 0 [label="(b & ~o & ~y) | (~b & ~o & ~y)"]
+	1 -> 1 [label=True]
+}

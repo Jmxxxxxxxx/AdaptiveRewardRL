@@ -1,0 +1,12 @@
+digraph {
+	fake [style=invisible]
+	0 [root=true]
+	1
+	2 [shape=doublecircle]
+	fake -> 0 [style=bold]
+	0 -> 0 [label="~o & ~y"]
+	0 -> 2 [label=o]
+	2 -> 2 [label=True]
+	0 -> 1 [label="y & ~o"]
+	1 -> 1 [label=True]
+}

@@ -1,6 +1,16 @@
 import argparse
 
 
+def str2bool(value):
+    if isinstance(value, bool):
+        return value
+    if value.lower() in ("true", "1", "yes", "y", "t"):
+        return True
+    if value.lower() in ("false", "0", "no", "n", "f"):
+        return False
+    raise argparse.ArgumentTypeError("Boolean value expected.")
+
+
 def get_parser():
     env_types = ["office", "water", "cheetah", "toy", "taxi"]
 
@@ -9,7 +19,7 @@ def get_parser():
     # reward function setup
     parser.add_argument('--reward_types', default="p", type=str,
                         help='This parameter indicated reward types. The options are: p, d, h, which means p: progress, d: distance, h: hybrid')
-    parser.add_argument('--use_adrs', default=False, type=bool,
+    parser.add_argument('--use_adrs', default=False, type=str2bool,
                         help='This parameter indicated using adaptive reward shaping or not')
     parser.add_argument('--hybrid_eta', default=0.005, type=float,
                         help='This parameter indicated adaptive reward shaping gamma factor for trade offs between distance and progress')

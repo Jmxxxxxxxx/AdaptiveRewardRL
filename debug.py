@@ -6,7 +6,7 @@ os.environ["CUDA_VISIBLE_DEVICES"] = ""
 
 sys.argv = [
     "run.py",
-    "--env_name", "toy",
+    "--env_name", "toy_test",
     "--total_timesteps", "10000",
     "--total_run", "1",
     "--episode_step", "25",
